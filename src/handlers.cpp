@@ -17,10 +17,13 @@ namespace handlers
     {
         bot_api.sendMessage(
             message->from->id, 
-            "Features:", 
+            "Features:\n"
+            "— *_System info_* provides different system data to obtain information about its status\\.\n"
+            "— *_System controls_* provides different abilities to manage system and control its status\\.", 
             nullptr, 
             nullptr, 
-            keyboard_markups::main_reply_kb_markup);
+            keyboard_markups::main_reply_kb_markup,
+            "MarkdownV2");
     }
 
     void send_system_info(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
@@ -33,6 +36,18 @@ namespace handlers
             keyboard_markups::system_info_inline_kb_markup);
     }
 
+    void return_to_system_info(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    {
+        bot_api.editMessageText(
+            "System info commands:", 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::system_info_inline_kb_markup);
+    }
+
     void send_system_controls(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
     {
         bot_api.sendMessage(
@@ -40,6 +55,18 @@ namespace handlers
             "System controls' commands:", 
             nullptr, 
             nullptr, 
+            keyboard_markups::system_controls_inline_kb_markup);
+    }
+
+    void return_to_system_controls(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    {
+        bot_api.editMessageText(
+            "System controls' commands:", 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
             keyboard_markups::system_controls_inline_kb_markup);
     }
 
@@ -152,7 +179,9 @@ namespace handlers
             callback->from->id, 
             callback->message->messageId, 
             "", 
-            "MarkdownV2");
+            "MarkdownV2",
+            nullptr,
+            keyboard_markups::return_to_system_info_inline_kb_markup);
     }
 
     void get_pm2_logs(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -160,7 +189,11 @@ namespace handlers
         bot_api.editMessageText(
             execute_terminal_command("pm2 logs --err --lines 10", false, 0.5), 
             callback->from->id, 
-            callback->message->messageId);
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::return_to_system_info_inline_kb_markup);
     }
 
     void get_system_metrics(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -194,7 +227,9 @@ namespace handlers
             callback->from->id, 
             callback->message->messageId, 
             "", 
-            "MarkdownV2");
+            "MarkdownV2",
+            nullptr,
+            keyboard_markups::return_to_system_info_inline_kb_markup);
     }
 
     void update_packages(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -210,7 +245,11 @@ namespace handlers
         bot_api.editMessageText(
             execute_terminal_command(update_command, true), 
             callback->from->id, 
-            callback->message->messageId);
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::return_to_system_controls_inline_kb_markup);
     }
 
     void check_if_reboot_required(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -228,7 +267,11 @@ namespace handlers
         bot_api.editMessageText(
             execute_terminal_command(reboot_required_command), 
             callback->from->id, 
-            callback->message->messageId);
+            callback->message->messageId, 
+            "", 
+            "MarkdownV2",
+            nullptr,
+            keyboard_markups::return_to_system_info_inline_kb_markup);
     }
 
     void check_if_updates_available(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -246,7 +289,11 @@ namespace handlers
                 "\n\n{} packages can be updated",
                 std::stoull(execute_terminal_command(available_updates, true)) - 1), 
             callback->from->id, 
-            callback->message->messageId);
+            callback->message->messageId, 
+            "", 
+            "MarkdownV2",
+            nullptr,
+            keyboard_markups::return_to_system_info_inline_kb_markup);
     }
 
     void verify_system_reboot(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -273,18 +320,6 @@ namespace handlers
             "CAACAgIAAxkBAAEH5a5mxlrq5o4MrcqTWpdw8tTiI9n2lQACyhMAAnscoUgi5zjt6JynqzUE");
 
         execute_terminal_command("reboot", true);
-    }
-
-    void return_to_system_controls(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
-    {
-        bot_api.editMessageText(
-            "System controls' commands:", 
-            callback->from->id, 
-            callback->message->messageId, 
-            "", 
-            "", 
-            nullptr, 
-            keyboard_markups::system_controls_inline_kb_markup);
     }
 
     void verify_system_shutdown(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -343,6 +378,8 @@ namespace handlers
         tg_bot_utils::register_callback_handlers(
             bot,
             {
+                {keyboard_markups::return_to_system_info_btn->callbackData, return_to_system_info},
+                {keyboard_markups::return_to_system_controls_btn->callbackData, return_to_system_controls},
                 {keyboard_markups::pm2_status_btn->callbackData, get_pm2_status},
                 {keyboard_markups::pm2_logs_btn->callbackData, get_pm2_logs},
                 {keyboard_markups::system_metrics_btn->callbackData, get_system_metrics},
@@ -351,7 +388,7 @@ namespace handlers
                 {keyboard_markups::updates_available_btn->callbackData, check_if_updates_available},
                 {keyboard_markups::reboot_system_btn->callbackData, verify_system_reboot},
                 {keyboard_markups::verify_system_reboot_btn->callbackData, reboot_system},
-                {keyboard_markups::return_to_system_controls_btn->callbackData, return_to_system_controls},
+                {keyboard_markups::cancel_system_controls_command_btn->callbackData, return_to_system_controls},
                 {keyboard_markups::shutdown_system_btn->callbackData, verify_system_shutdown},
                 {keyboard_markups::verify_system_shutdown_btn->callbackData, shutdown_system},
             },

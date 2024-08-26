@@ -36,6 +36,17 @@ namespace keyboard_markups
         };
     }
 
+    void construct_return_to_system_info_inline_kb_markup()
+    {
+        return_to_system_info_btn->text = "Go back";
+        return_to_system_info_btn->callbackData = "return_to_system_info";
+
+        return_to_system_info_inline_kb_markup->inlineKeyboard = 
+        {
+            {return_to_system_info_btn}
+        };
+    }
+
     void construct_system_controls_inline_kb_markup()
     {
         update_packages_btn->text = "Update packages";
@@ -47,13 +58,24 @@ namespace keyboard_markups
         shutdown_system_btn->text = "Shut down system";
         shutdown_system_btn->callbackData = "shutdown_system";
 
-        return_to_system_controls_btn->text = "No";
-        return_to_system_controls_btn->callbackData = "return_to_system_controls";
+        cancel_system_controls_command_btn->text = "No";
+        cancel_system_controls_command_btn->callbackData = "return_to_system_controls";
 
         system_controls_inline_kb_markup->inlineKeyboard = 
         {
             {update_packages_btn}, 
             {reboot_system_btn, shutdown_system_btn}
+        };
+    }
+
+    void construct_return_to_system_controls_inline_kb_markup()
+    {
+        return_to_system_controls_btn->text = "Go back";
+        return_to_system_controls_btn->callbackData = "return_to_system_controls";
+
+        return_to_system_controls_inline_kb_markup->inlineKeyboard = 
+        {
+            {return_to_system_controls_btn}
         };
     }
 
@@ -65,7 +87,7 @@ namespace keyboard_markups
         reboot_system_verification_inline_kb_markup->inlineKeyboard = 
         {
             {verify_system_reboot_btn}, 
-            {return_to_system_controls_btn}
+            {cancel_system_controls_command_btn}
         };
     }
 
@@ -77,7 +99,7 @@ namespace keyboard_markups
         shutdown_system_verification_inline_kb_markup->inlineKeyboard = 
         {
             {verify_system_shutdown_btn}, 
-            {return_to_system_controls_btn}
+            {cancel_system_controls_command_btn}
         };
     }
 
@@ -85,7 +107,9 @@ namespace keyboard_markups
     {
         construct_main_reply_kb_markup();
         construct_system_info_inline_kb_markup();
+        construct_return_to_system_info_inline_kb_markup();
         construct_system_controls_inline_kb_markup();
+        construct_return_to_system_controls_inline_kb_markup();
         construct_reboot_system_verification_inline_kb_markup();
         construct_shutdown_system_verification_inline_kb_markup();
     }
