@@ -13,63 +13,6 @@ namespace handlers
 {
     const size_t max_message_size = 4096;
 
-    void on_start_command(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
-    {
-        bot_api.sendMessage(
-            message->from->id, 
-            "Features:\n"
-            "— *_System info_* provides different system data to obtain information about its status\\.\n"
-            "— *_System controls_* provides different abilities to manage system and control its status\\.", 
-            nullptr, 
-            nullptr, 
-            keyboard_markups::main_reply_kb_markup,
-            "MarkdownV2");
-    }
-
-    void send_system_info(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
-    {
-        bot_api.sendMessage(
-            message->from->id, 
-            "System info commands:", 
-            nullptr, 
-            nullptr, 
-            keyboard_markups::system_info_inline_kb_markup);
-    }
-
-    void return_to_system_info(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
-    {
-        bot_api.editMessageText(
-            "System info commands:", 
-            callback->from->id, 
-            callback->message->messageId, 
-            "", 
-            "",
-            nullptr,
-            keyboard_markups::system_info_inline_kb_markup);
-    }
-
-    void send_system_controls(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
-    {
-        bot_api.sendMessage(
-            message->from->id,
-            "System controls' commands:", 
-            nullptr, 
-            nullptr, 
-            keyboard_markups::system_controls_inline_kb_markup);
-    }
-
-    void return_to_system_controls(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
-    {
-        bot_api.editMessageText(
-            "System controls' commands:", 
-            callback->from->id, 
-            callback->message->messageId, 
-            "", 
-            "",
-            nullptr,
-            keyboard_markups::system_controls_inline_kb_markup);
-    }
-
     std::string execute_terminal_command(const std::string& command, bool requires_sudo = false, double timeout = 0.0)
     {
         boost::process::opstream in_stream;
@@ -105,8 +48,91 @@ namespace handlers
         
         return output_data;
     }
+    
+    void on_start_command(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
+    try
+    {
+        bot_api.sendMessage(
+            message->from->id, 
+            "Features:\n"
+            "— *_System info_* provides different system data to obtain information about its status\\.\n"
+            "— *_System controls_* provides different abilities to manage system and control its status\\.", 
+            nullptr, 
+            nullptr, 
+            keyboard_markups::main_reply_kb_markup,
+            "MarkdownV2");
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void send_system_info(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
+    try
+    {
+        bot_api.sendMessage(
+            message->from->id, 
+            "System info commands:", 
+            nullptr, 
+            nullptr, 
+            keyboard_markups::system_info_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void return_to_system_info(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        bot_api.editMessageText(
+            "System info commands:", 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::system_info_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void send_system_controls(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
+    try
+    {
+        bot_api.sendMessage(
+            message->from->id,
+            "System controls' commands:", 
+            nullptr, 
+            nullptr, 
+            keyboard_markups::system_controls_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void return_to_system_controls(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        bot_api.editMessageText(
+            "System controls' commands:", 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::system_controls_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void get_pm2_status(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         std::string message;
 
@@ -183,8 +209,13 @@ namespace handlers
             nullptr,
             keyboard_markups::return_to_system_info_inline_kb_markup);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void get_pm2_logs(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         bot_api.editMessageText(
             execute_terminal_command("pm2 logs --err --lines 10", false, 0.5), 
@@ -195,8 +226,13 @@ namespace handlers
             nullptr,
             keyboard_markups::return_to_system_info_inline_kb_markup);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void get_system_metrics(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         static std::string cpu_temp_command = 
             R"(sensors | awk '/Core/ {sum+=$3; count++} END {printf "%.2f°C", sum/count}')";
@@ -231,8 +267,13 @@ namespace handlers
             nullptr,
             keyboard_markups::return_to_system_info_inline_kb_markup);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void update_packages(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         bot_api.editMessageText(
             "Updating packages. Wait...", 
@@ -251,8 +292,13 @@ namespace handlers
             nullptr,
             keyboard_markups::return_to_system_controls_inline_kb_markup);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void check_if_reboot_required(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         static std::string reboot_required_command = 
         R"(
@@ -273,8 +319,13 @@ namespace handlers
             nullptr,
             keyboard_markups::return_to_system_info_inline_kb_markup);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void check_if_updates_available(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         bot_api.editMessageText(
             "Checking for available updates. Wait...", 
@@ -295,8 +346,13 @@ namespace handlers
             nullptr,
             keyboard_markups::return_to_system_info_inline_kb_markup);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void verify_system_reboot(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         bot_api.editMessageText(
             "Do you really want to reboot system?", 
@@ -307,8 +363,13 @@ namespace handlers
             nullptr, 
             keyboard_markups::reboot_system_verification_inline_kb_markup);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void reboot_system(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         bot_api.editMessageText(
             "System is rebooting. Wait...", 
@@ -321,8 +382,13 @@ namespace handlers
 
         execute_terminal_command("reboot", true);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void verify_system_shutdown(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         bot_api.editMessageText(
             "Do you really want to shut down system?", 
@@ -333,8 +399,13 @@ namespace handlers
             nullptr, 
             keyboard_markups::shutdown_system_verification_inline_kb_markup);
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     void shutdown_system(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
     {
         bot_api.editMessageText(
             "System is shutting down. Bye(", 
@@ -346,6 +417,10 @@ namespace handlers
             "CAACAgIAAxkBAAEH6V9mxy-ooVmoYsoHoRfYc1ufd-k1JAACGxsAAp1hoEh1dVqj6-ZQZDUE");
 
         execute_terminal_command("shutdown -h now", true);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
     }
 
     bool validate_user_by_message(const TgBot::Message::Ptr message)
