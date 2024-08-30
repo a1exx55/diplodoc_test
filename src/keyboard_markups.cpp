@@ -17,7 +17,7 @@ namespace keyboard_markups
         pm2_status_btn->callbackData = "get_pm2_status";
 
         pm2_logs_btn->text = "PM2 logs";
-        pm2_logs_btn->callbackData = "get_pm2_logs";
+        pm2_logs_btn->callbackData = "choose_pm2_logs_process";
 
         system_metrics_btn->text = "System metrics";
         system_metrics_btn->callbackData = "get_system_metrics";
@@ -44,6 +44,17 @@ namespace keyboard_markups
         return_to_system_info_inline_kb_markup->inlineKeyboard = 
         {
             {return_to_system_info_btn}
+        };
+    }
+
+    void construct_return_to_pm2_logs_inline_kb_markup()
+    {
+        return_to_pm2_logs_btn->text = "Go back";
+        return_to_pm2_logs_btn->callbackData = "choose_pm2_logs_process";
+
+        return_to_pm2_logs_inline_kb_markup->inlineKeyboard = 
+        {
+            {return_to_pm2_logs_btn}
         };
     }
 
@@ -103,11 +114,40 @@ namespace keyboard_markups
         };
     }
 
+    TgBot::InlineKeyboardMarkup::Ptr construct_pm2_processes_inline_kb_markup(
+        std::vector<std::pair<size_t, std::string>> processes_data)
+    {
+        auto pm2_processes_inline_kb_markup = std::make_shared<TgBot::InlineKeyboardMarkup>();
+
+        for (size_t i = 0; i < processes_data.size(); ++i)
+        {
+            auto pm2_process_btn = std::make_shared<TgBot::InlineKeyboardButton>();
+            pm2_process_btn->text = processes_data[i].second;
+            pm2_process_btn->callbackData = "get_pm2_logs_" + std::to_string(processes_data[i].first);
+
+            if (i % 2 == 0)
+            {
+                pm2_processes_inline_kb_markup->inlineKeyboard.emplace_back(
+                    std::vector<TgBot::InlineKeyboardButton::Ptr>{pm2_process_btn});
+            }
+            else
+            {
+                pm2_processes_inline_kb_markup->inlineKeyboard.back().emplace_back(pm2_process_btn);
+            }
+        }
+
+        pm2_processes_inline_kb_markup->inlineKeyboard.emplace_back(
+            std::vector<TgBot::InlineKeyboardButton::Ptr>{return_to_system_info_btn});
+
+        return pm2_processes_inline_kb_markup;
+    }
+
     void construct_kb_markups()
     {
         construct_main_reply_kb_markup();
         construct_system_info_inline_kb_markup();
         construct_return_to_system_info_inline_kb_markup();
+        construct_return_to_pm2_logs_inline_kb_markup();
         construct_system_controls_inline_kb_markup();
         construct_return_to_system_controls_inline_kb_markup();
         construct_reboot_system_verification_inline_kb_markup();

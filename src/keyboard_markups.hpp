@@ -20,6 +20,9 @@ namespace keyboard_markups
     inline auto return_to_system_info_btn = std::make_shared<TgBot::InlineKeyboardButton>();
     inline auto return_to_system_info_inline_kb_markup = std::make_shared<TgBot::InlineKeyboardMarkup>();
 
+    inline auto return_to_pm2_logs_btn = std::make_shared<TgBot::InlineKeyboardButton>();
+    inline auto return_to_pm2_logs_inline_kb_markup = std::make_shared<TgBot::InlineKeyboardMarkup>();
+
     inline auto update_packages_btn = std::make_shared<TgBot::InlineKeyboardButton>();
     inline auto reboot_system_btn = std::make_shared<TgBot::InlineKeyboardButton>();
     inline auto shutdown_system_btn = std::make_shared<TgBot::InlineKeyboardButton>();
@@ -34,6 +37,9 @@ namespace keyboard_markups
 
     inline auto verify_system_shutdown_btn = std::make_shared<TgBot::InlineKeyboardButton>();
     inline auto shutdown_system_verification_inline_kb_markup = std::make_shared<TgBot::InlineKeyboardMarkup>();
+
+    TgBot::InlineKeyboardMarkup::Ptr construct_pm2_processes_inline_kb_markup(
+        std::vector<std::pair<size_t, std::string>> processes_data);
 
     void construct_kb_markups();
 }

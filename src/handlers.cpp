@@ -214,17 +214,64 @@ namespace handlers
         std::cerr << e.what() << '\n';
     }
 
+    void choose_pm2_logs_process(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        std::string pm2_list_data = execute_terminal_command("pm2 jlist");
+        
+        json::array pm2_list_json = json::parse(pm2_list_data).as_array();
+
+        if (pm2_list_json.empty())
+        {
+            bot_api.editMessageText(
+                "No PM2 processes available", 
+                callback->from->id, 
+                callback->message->messageId,
+                "",
+                "",
+                nullptr,
+                keyboard_markups::return_to_system_info_inline_kb_markup); 
+        }
+        else
+        {
+            std::vector<std::pair<size_t, std::string>> pm2_processes_data;
+
+            for (const auto& pm2_process : pm2_list_json)
+            {
+                pm2_processes_data.emplace_back(
+                    pm2_process.as_object().at("pm_id").to_number<size_t>(), 
+                    pm2_process.as_object().at("name").as_string().c_str());
+            }
+
+            bot_api.editMessageText(
+                "Choose PM2 process to inspect:", 
+                callback->from->id, 
+                callback->message->messageId,
+                "",
+                "",
+                nullptr,
+                keyboard_markups::construct_pm2_processes_inline_kb_markup(pm2_processes_data)); 
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    
+
     void get_pm2_logs(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
     try
     {
+        size_t pm2_process_id = std::stoull(callback->data.substr(callback->data.rfind('_') + 1));
+
         bot_api.editMessageText(
-            execute_terminal_command("pm2 logs --err --lines 10", false, 0.5), 
+            execute_terminal_command(std::format("pm2 logs {} --err --lines 10", pm2_process_id), false, 0.5), 
             callback->from->id, 
             callback->message->messageId, 
             "", 
             "",
             nullptr,
-            keyboard_markups::return_to_system_info_inline_kb_markup);
+            keyboard_markups::return_to_pm2_logs_inline_kb_markup);
     }
     catch(const std::exception& e)
     {
@@ -456,7 +503,7 @@ namespace handlers
                 {keyboard_markups::return_to_system_info_btn->callbackData, return_to_system_info},
                 {keyboard_markups::return_to_system_controls_btn->callbackData, return_to_system_controls},
                 {keyboard_markups::pm2_status_btn->callbackData, get_pm2_status},
-                {keyboard_markups::pm2_logs_btn->callbackData, get_pm2_logs},
+                {keyboard_markups::pm2_logs_btn->callbackData, choose_pm2_logs_process},
                 {keyboard_markups::system_metrics_btn->callbackData, get_system_metrics},
                 {keyboard_markups::update_packages_btn->callbackData, update_packages},
                 {keyboard_markups::reboot_required_btn->callbackData, check_if_reboot_required},
@@ -467,6 +514,15 @@ namespace handlers
                 {keyboard_markups::shutdown_system_btn->callbackData, verify_system_shutdown},
                 {keyboard_markups::verify_system_shutdown_btn->callbackData, shutdown_system},
             },
+            tg_bot_utils::text_comparison_policy::equal,
+            validate_user_by_callback);
+
+        tg_bot_utils::register_callback_handlers(
+            bot,
+            {
+                {"get_pm2_logs_", get_pm2_logs},
+            },
+            tg_bot_utils::text_comparison_policy::starts_with,
             validate_user_by_callback);
     }
 }
