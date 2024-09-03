@@ -483,8 +483,6 @@ namespace handlers
     {
         std::string pm2_process_id = callback->data.substr(callback->data.rfind('_') + 1);
         
-        execute_terminal_command(std::format("pm2 start {}", pm2_process_id));
-
         bot_api.editMessageText(
             pm2_process_id == "all" ? "All PM2 processes are started!" : "PM2 process is started!", 
             callback->from->id, 
@@ -493,6 +491,8 @@ namespace handlers
             "",
             nullptr,
             keyboard_markups::return_to_pm2_tools_inline_kb_markup);
+
+        execute_terminal_command(std::format("pm2 start {}", pm2_process_id));
     }
     catch(const std::exception& e)
     {
@@ -567,8 +567,6 @@ namespace handlers
     {
         std::string pm2_process_id = callback->data.substr(callback->data.rfind('_') + 1);
         
-        execute_terminal_command(std::format("pm2 stop {}", pm2_process_id));
-
         bot_api.editMessageText(
             pm2_process_id == "all" ? "All PM2 processes are stopped!" : "PM2 process is stopped!", 
             callback->from->id, 
@@ -577,6 +575,8 @@ namespace handlers
             "",
             nullptr,
             keyboard_markups::return_to_pm2_tools_inline_kb_markup);
+
+        execute_terminal_command(std::format("pm2 stop {}", pm2_process_id));
     }
     catch(const std::exception& e)
     {
@@ -651,8 +651,6 @@ namespace handlers
     {
         std::string pm2_process_id = callback->data.substr(callback->data.rfind('_') + 1);
         
-        execute_terminal_command(std::format("pm2 start {}", pm2_process_id));
-
         bot_api.editMessageText(
             pm2_process_id == "all" ? "All PM2 processes are restarted!" : "PM2 process is restarted!", 
             callback->from->id, 
@@ -661,6 +659,8 @@ namespace handlers
             "",
             nullptr,
             keyboard_markups::return_to_pm2_tools_inline_kb_markup);
+
+        execute_terminal_command(std::format("pm2 restart {}", pm2_process_id));
     }
     catch(const std::exception& e)
     {
