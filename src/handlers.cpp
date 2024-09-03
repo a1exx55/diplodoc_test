@@ -250,7 +250,7 @@ namespace handlers
                 "",
                 "",
                 nullptr,
-                keyboard_markups::construct_pm2_processes_inline_kb_markup(pm2_processes_data)); 
+                keyboard_markups::construct_pm2_logs_processes_inline_kb_markup(pm2_processes_data)); 
         }
     }
     catch(const std::exception& e)
@@ -262,7 +262,7 @@ namespace handlers
     void get_pm2_logs(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
     try
     {
-        size_t pm2_process_id = std::stoull(callback->data.substr(callback->data.rfind('_') + 1));
+        std::string pm2_process_id = callback->data.substr(callback->data.rfind('_') + 1);
 
         bot_api.editMessageText(
             execute_terminal_command(std::format("pm2 logs {} --err --lines 10", pm2_process_id), false, 0.5), 
@@ -319,31 +319,6 @@ namespace handlers
         std::cerr << e.what() << '\n';
     }
 
-    void update_packages(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
-    try
-    {
-        bot_api.editMessageText(
-            "Updating packages. Wait...", 
-            callback->from->id, 
-            callback->message->messageId);
-        
-        static std::string update_command = 
-            R"(apt update &> /dev/null && apt upgrade -y 2> /dev/null | grep -Po "\d+ (?:not )?upgraded" | awk '{print $1, "packages were", ($2 == "upgraded" ? "upgraded" : "not upgraded")}')";
-
-        bot_api.editMessageText(
-            execute_terminal_command(update_command, true), 
-            callback->from->id, 
-            callback->message->messageId, 
-            "", 
-            "",
-            nullptr,
-            keyboard_markups::return_to_system_controls_inline_kb_markup);
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
-
     void check_if_reboot_required(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
     try
     {
@@ -392,6 +367,300 @@ namespace handlers
             "MarkdownV2",
             nullptr,
             keyboard_markups::return_to_system_info_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void update_packages(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        bot_api.editMessageText(
+            "Updating packages. Wait...", 
+            callback->from->id, 
+            callback->message->messageId);
+        
+        static std::string update_command = 
+            R"(apt update &> /dev/null && apt upgrade -y 2> /dev/null | grep -Po "\d+ (?:not )?upgraded" | awk '{print $1, "packages were", ($2 == "upgraded" ? "upgraded" : "not upgraded")}')";
+
+        bot_api.editMessageText(
+            execute_terminal_command(update_command, true), 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::return_to_system_controls_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void get_pm2_tools(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        bot_api.editMessageText(
+            "Choose PM2 tool to use:", 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::pm2_tools_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void choose_pm2_process_to_start(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        std::string pm2_list_data = execute_terminal_command("pm2 jlist");
+        
+        json::array pm2_list_json = json::parse(pm2_list_data).as_array();
+
+        if (pm2_list_json.empty())
+        {
+            bot_api.editMessageText(
+                "No PM2 processes available", 
+                callback->from->id, 
+                callback->message->messageId,
+                "",
+                "",
+                nullptr,
+                keyboard_markups::return_to_pm2_tools_inline_kb_markup); 
+        }
+        else
+        {
+            std::vector<std::pair<size_t, std::string>> pm2_processes_to_start_data;
+
+            for (const auto& pm2_process : pm2_list_json)
+            {
+                if (pm2_process.as_object().at("pm2_env").as_object().at("status").as_string() != "online")
+                {
+                    pm2_processes_to_start_data.emplace_back(
+                        pm2_process.as_object().at("pm_id").to_number<size_t>(), 
+                        pm2_process.as_object().at("name").as_string().c_str());
+                }
+            }
+
+            if (pm2_processes_to_start_data.empty())
+            {
+                bot_api.editMessageText(
+                    "No PM2 processes available to start", 
+                    callback->from->id, 
+                    callback->message->messageId,
+                    "",
+                    "",
+                    nullptr,
+                    keyboard_markups::return_to_pm2_tools_inline_kb_markup); 
+            }
+            else
+            {
+                bot_api.editMessageText(
+                    "Choose PM2 process to start:", 
+                    callback->from->id, 
+                    callback->message->messageId,
+                    "",
+                    "",
+                    nullptr,
+                    keyboard_markups::construct_pm2_tools_processes_inline_kb_markup(
+                        pm2_processes_to_start_data, 
+                        "start_pm2_process_")); 
+            }
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void start_pm2_process(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        std::string pm2_process_id = callback->data.substr(callback->data.rfind('_') + 1);
+        
+        execute_terminal_command(std::format("pm2 start {}", pm2_process_id));
+
+        bot_api.editMessageText(
+            pm2_process_id == "all" ? "All PM2 processes are started!" : "PM2 process is started!", 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::return_to_pm2_tools_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void choose_pm2_process_to_stop(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        std::string pm2_list_data = execute_terminal_command("pm2 jlist");
+        
+        json::array pm2_list_json = json::parse(pm2_list_data).as_array();
+
+        if (pm2_list_json.empty())
+        {
+            bot_api.editMessageText(
+                "No PM2 processes available", 
+                callback->from->id, 
+                callback->message->messageId,
+                "",
+                "",
+                nullptr,
+                keyboard_markups::return_to_pm2_tools_inline_kb_markup); 
+        }
+        else
+        {
+            std::vector<std::pair<size_t, std::string>> pm2_processes_to_stop_data;
+
+            for (const auto& pm2_process : pm2_list_json)
+            {
+                if (pm2_process.as_object().at("pm2_env").as_object().at("status").as_string() != "stopped")
+                {
+                    pm2_processes_to_stop_data.emplace_back(
+                        pm2_process.as_object().at("pm_id").to_number<size_t>(), 
+                        pm2_process.as_object().at("name").as_string().c_str());
+                }
+            }
+
+            if (pm2_processes_to_stop_data.empty())
+            {
+                bot_api.editMessageText(
+                    "No PM2 processes available to stop", 
+                    callback->from->id, 
+                    callback->message->messageId,
+                    "",
+                    "",
+                    nullptr,
+                    keyboard_markups::return_to_pm2_tools_inline_kb_markup); 
+            }
+            else
+            {
+                bot_api.editMessageText(
+                    "Choose PM2 process to stop:", 
+                    callback->from->id, 
+                    callback->message->messageId,
+                    "",
+                    "",
+                    nullptr,
+                    keyboard_markups::construct_pm2_tools_processes_inline_kb_markup(
+                        pm2_processes_to_stop_data, 
+                        "stop_pm2_process_")); 
+            }
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void stop_pm2_process(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        std::string pm2_process_id = callback->data.substr(callback->data.rfind('_') + 1);
+        
+        execute_terminal_command(std::format("pm2 stop {}", pm2_process_id));
+
+        bot_api.editMessageText(
+            pm2_process_id == "all" ? "All PM2 processes are stopped!" : "PM2 process is stopped!", 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::return_to_pm2_tools_inline_kb_markup);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void choose_pm2_process_to_restart(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        std::string pm2_list_data = execute_terminal_command("pm2 jlist");
+        
+        json::array pm2_list_json = json::parse(pm2_list_data).as_array();
+
+        if (pm2_list_json.empty())
+        {
+            bot_api.editMessageText(
+                "No PM2 processes available", 
+                callback->from->id, 
+                callback->message->messageId,
+                "",
+                "",
+                nullptr,
+                keyboard_markups::return_to_pm2_tools_inline_kb_markup); 
+        }
+        else
+        {
+            std::vector<std::pair<size_t, std::string>> pm2_processes_to_restart_data;
+
+            for (const auto& pm2_process : pm2_list_json)
+            {
+                if (pm2_process.as_object().at("pm2_env").as_object().at("status").as_string() != "stopped")
+                {
+                    pm2_processes_to_restart_data.emplace_back(
+                        pm2_process.as_object().at("pm_id").to_number<size_t>(), 
+                        pm2_process.as_object().at("name").as_string().c_str());
+                }
+            }
+
+            if (pm2_processes_to_restart_data.empty())
+            {
+                bot_api.editMessageText(
+                    "No PM2 processes available to restart", 
+                    callback->from->id, 
+                    callback->message->messageId,
+                    "",
+                    "",
+                    nullptr,
+                    keyboard_markups::return_to_pm2_tools_inline_kb_markup); 
+            }
+            else
+            {
+                bot_api.editMessageText(
+                    "Choose PM2 process to restart:", 
+                    callback->from->id, 
+                    callback->message->messageId,
+                    "",
+                    "",
+                    nullptr,
+                    keyboard_markups::construct_pm2_tools_processes_inline_kb_markup(
+                        pm2_processes_to_restart_data, 
+                        "restart_pm2_process_")); 
+            }
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    void restart_pm2_process(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
+    try
+    {
+        std::string pm2_process_id = callback->data.substr(callback->data.rfind('_') + 1);
+        
+        execute_terminal_command(std::format("pm2 start {}", pm2_process_id));
+
+        bot_api.editMessageText(
+            pm2_process_id == "all" ? "All PM2 processes are restarted!" : "PM2 process is restarted!", 
+            callback->from->id, 
+            callback->message->messageId, 
+            "", 
+            "",
+            nullptr,
+            keyboard_markups::return_to_pm2_tools_inline_kb_markup);
     }
     catch(const std::exception& e)
     {
@@ -505,9 +774,13 @@ namespace handlers
                 {keyboard_markups::pm2_status_btn->callbackData, get_pm2_status},
                 {keyboard_markups::pm2_logs_btn->callbackData, choose_pm2_logs_process},
                 {keyboard_markups::system_metrics_btn->callbackData, get_system_metrics},
-                {keyboard_markups::update_packages_btn->callbackData, update_packages},
                 {keyboard_markups::reboot_required_btn->callbackData, check_if_reboot_required},
                 {keyboard_markups::updates_available_btn->callbackData, check_if_updates_available},
+                {keyboard_markups::update_packages_btn->callbackData, update_packages},
+                {keyboard_markups::pm2_tools_btn->callbackData, get_pm2_tools},
+                {keyboard_markups::start_pm2_process_btn->callbackData, choose_pm2_process_to_start},
+                {keyboard_markups::stop_pm2_process_btn->callbackData, choose_pm2_process_to_stop},
+                {keyboard_markups::restart_pm2_process_btn->callbackData, choose_pm2_process_to_restart},
                 {keyboard_markups::reboot_system_btn->callbackData, verify_system_reboot},
                 {keyboard_markups::verify_system_reboot_btn->callbackData, reboot_system},
                 {keyboard_markups::cancel_system_controls_command_btn->callbackData, return_to_system_controls},
@@ -521,6 +794,9 @@ namespace handlers
             bot,
             {
                 {"get_pm2_logs_", get_pm2_logs},
+                {"start_pm2_process_", start_pm2_process},
+                {"stop_pm2_process_", stop_pm2_process},
+                {"restart_pm2_process_", restart_pm2_process}
             },
             tg_bot_utils::text_comparison_policy::starts_with,
             validate_user_by_callback);
