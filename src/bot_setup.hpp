@@ -2,6 +2,7 @@
 #define BOT_SETUP_HPP
 
 #include <config.hpp>
+#include <logging.hpp>
 #include <handlers.hpp>
 #include <keyboard_markups.hpp>
 
@@ -21,7 +22,7 @@ void setup_bot()
             SIGINT, 
             [](int) 
             {
-                std::clog << "Bot was successfully shut down!\n";
+                logging::log_info("Bot was successfully shut down!");
                 exit(0);
             });
 
@@ -34,7 +35,7 @@ void setup_bot()
 
         TgBot::TgLongPoll long_poll(bot);
 
-        std::clog << "Bot was successfully started!\n";
+        logging::log_info("Bot was successfully started!");
 
         while (true) 
         {
@@ -44,14 +45,14 @@ void setup_bot()
             }
             catch(const std::exception& e)
             {
-                std::cerr << e.what() << '\n';
+                logging::log_error(e.what());
             }
         }
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
-        std::clog << "Bot was unexpectedly shut down due to an error!\n";
+        logging::log_error(e.what());
+        logging::log_info("Bot was unexpectedly shut down due to an error!");
     }
 }
 

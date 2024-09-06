@@ -1,6 +1,7 @@
 #include <handlers.hpp>
 
 #include <config.hpp>
+#include <logging.hpp>
 #include <keyboard_markups.hpp>
 #include <tg_bot_utils.hpp>
 
@@ -64,7 +65,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void send_system_info(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
@@ -79,7 +80,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void return_to_system_info(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -96,7 +97,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void send_system_controls(const TgBot::Api& bot_api, const TgBot::Message::Ptr message)
@@ -111,7 +112,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void return_to_system_controls(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -128,7 +129,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void get_pm2_status(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -211,7 +212,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void choose_pm2_logs_process(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -255,7 +256,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
     
 
@@ -275,7 +276,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void get_system_metrics(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -316,7 +317,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void check_if_reboot_required(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -343,7 +344,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void check_if_updates_available(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -370,7 +371,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void update_packages(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -395,7 +396,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void get_pm2_tools(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -412,7 +413,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void choose_pm2_process_to_start(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -475,7 +476,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void start_pm2_process(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -496,7 +497,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void choose_pm2_process_to_stop(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -559,7 +560,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void stop_pm2_process(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -580,7 +581,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void choose_pm2_process_to_restart(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -643,7 +644,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void restart_pm2_process(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -664,7 +665,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void verify_system_reboot(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -681,7 +682,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void reboot_system(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -700,7 +701,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void verify_system_shutdown(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -717,7 +718,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     void shutdown_system(const TgBot::Api& bot_api, const TgBot::CallbackQuery::Ptr callback)
@@ -736,7 +737,7 @@ namespace handlers
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        logging::log_error(e.what());
     }
 
     bool validate_user_by_message(const TgBot::Message::Ptr message)
