@@ -184,14 +184,10 @@ namespace handlers
 
                     message += std::format(
                         "— Status: _online_\n— CPU: _{}%_\n— RAM: _{}MB_\n— Uptime: _{}_",
-                        tg_bot_utils::escape_markdown_message(
-                            std::to_string(
-                                std::round(
-                                    pm2_process.as_object().at("monit").as_object().at("cpu").to_number<double>()))),
-                        tg_bot_utils::escape_markdown_message(
-                            std::to_string(
-                                std::round(
-                                    pm2_process.as_object().at("monit").as_object().at("memory").to_number<double>() / 1024 / 1024))),
+                            std::round(
+                                pm2_process.as_object().at("monit").as_object().at("cpu").to_number<double>()),
+                            std::round(
+                                pm2_process.as_object().at("monit").as_object().at("memory").to_number<double>() / 1024 / 1024),
                         pm2_process_uptime_str);
                 }
                 else
