@@ -16,7 +16,11 @@ jobs:
           src-root: './docs'
           build-root: './docs-html'
       - name: test
-        run: pwd
+        with:
+          command: |
+            echo 'DIRECTORY'
+            pwd
+              
                
   deploy-docs:
     needs: build-docs
