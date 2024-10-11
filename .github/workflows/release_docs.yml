@@ -29,7 +29,7 @@ jobs:
       - name: Deploy
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avzr --delete
+          switches: -avz --delete
           path: /home/runner/work/diplodoc_test/diplodoc_test/docs-html/
           remote_path: ${{ vars.DOCS_REMOTE_PATH }}
           remote_host: ${{ vars.REMOTE_HOST }}
