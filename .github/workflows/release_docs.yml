@@ -20,13 +20,17 @@ jobs:
     needs: build-docs
     runs-on: ubuntu-latest
     steps:
+      - name: test
+        run: |
+          pwd
+          ls
       - name: Deploy
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ vars.REMOTE_HOST }}
           username: ${{ vars.REMOTE_USER }}
           key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
-          source: ./docs-html/*
+          source: "docs-html/*"
           target: ${{ vars.DOCS_REMOTE_PATH }}
     
       # - name: Deploy
