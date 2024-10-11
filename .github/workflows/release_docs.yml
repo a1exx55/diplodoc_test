@@ -28,8 +28,12 @@ jobs:
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avz --delete
-          path: ${{ env.GITHUB_WORKSPACE }}/docs-html/
+          path: /home/runner/work/diplodoc_test/diplodoc_test/docs-html/
           remote_path: ${{ vars.DOCS_REMOTE_PATH }}
           remote_host: ${{ vars.REMOTE_HOST }}
           remote_user: ${{ vars.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
+      - name: test
+        run: |
+          pwd
+          ls
