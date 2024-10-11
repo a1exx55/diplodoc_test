@@ -15,11 +15,11 @@ jobs:
         with:
           src-root: './docs'
           build-root: './docs-html'
-      - name: test
-        with:
           command: |
             echo 'DIRECTORY'
             pwd
+
+          
               
                
   deploy-docs:
