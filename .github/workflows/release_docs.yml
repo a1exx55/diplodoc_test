@@ -15,10 +15,6 @@ jobs:
         with:
           src-root: './docs'
           build-root: './docs-html'
-      - name: test
-        run: |
-          pwd
-          ls /github/workspace
               
   deploy-docs:
     needs: build-docs
