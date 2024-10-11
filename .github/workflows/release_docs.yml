@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: test
         run: |
-          ls
+          ls /home/runner/work/diplodoc_test/diplodoc_test/docs-html
       - name: Deploy
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -31,6 +31,7 @@ jobs:
           key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
           source: "/home/runner/work/diplodoc_test/diplodoc_test/docs-html/*"
           target: ${{ vars.DOCS_REMOTE_PATH }}
+          debug: true
     
       # - name: Deploy
       #   uses: burnett01/rsync-deployments@7.0.1
