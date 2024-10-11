@@ -10,12 +10,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build
-        uses: diplodoc-platform/docs-build-action@v3
-        with:
-          src-root: './docs'
-          build-root: './docs-html'
-          
+      # - name: Build
+      #   uses: diplodoc-platform/docs-build-action@v3
+      #   with:
+      #     src-root: './docs'
+      #     build-root: './docs-html'
+      - name: Установка пакета @diplodoc/cli
+        run: npm i @diplodoc/cli -g
+        shell: bash
+
+      - name: Сборка оглавления
+        run: yfm -i ./docs -o ./docs-html
+        shell: bash    
       # - name: Deploy
       #   uses: appleboy/scp-action@v0.1.7
       #   with:
