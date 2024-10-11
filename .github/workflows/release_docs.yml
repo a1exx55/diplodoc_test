@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-docs:
+  build-and-deploy-docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,27 +15,23 @@ jobs:
         with:
           src-root: './docs'
           build-root: './docs-html'
-              
-  # deploy-docs:
-  #   needs: build-docs
-  #   runs-on: ubuntu-latest
-  #   steps:
-      - name: Deploy
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ vars.REMOTE_HOST }}
-          username: ${{ vars.REMOTE_USER }}
-          key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
-          source: "./docs-html/*"
-          target: ${{ vars.DOCS_REMOTE_PATH }}
-          debug: true
-    
+          
       # - name: Deploy
-      #   uses: burnett01/rsync-deployments@7.0.1
+      #   uses: appleboy/scp-action@v0.1.7
       #   with:
-      #     switches: -avz --delete
-      #     path: /home/runner/work/diplodoc_test/diplodoc_test/docs-html/
-      #     remote_path: ${{ vars.DOCS_REMOTE_PATH }}
-      #     remote_host: ${{ vars.REMOTE_HOST }}
-      #     remote_user: ${{ vars.REMOTE_USER }}
-      #     remote_key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
+      #     host: ${{ vars.REMOTE_HOST }}
+      #     username: ${{ vars.REMOTE_USER }}
+      #     key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
+      #     source: "./docs-html/*"
+      #     target: ${{ vars.DOCS_REMOTE_PATH }}
+      #     debug: true
+    
+      - name: Deploy
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete
+          path: ./docs-html/
+          remote_path: ${{ vars.DOCS_REMOTE_PATH }}
+          remote_host: ${{ vars.REMOTE_HOST }}
+          remote_user: ${{ vars.REMOTE_USER }}
+          remote_key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
