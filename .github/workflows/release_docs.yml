@@ -4,11 +4,18 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-
-          
+      - name: Build
+        uses: diplodoc-platform/docs-build-action@v3
+        with:
+          src-root: './docs'
+          build-root: './docs-html'
               
-               
   deploy-docs:
     needs: build-docs
     runs-on: ubuntu-latest
@@ -16,8 +23,8 @@ jobs:
       - name: Deploy
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avz --delete
-          path: /docs-html/
+          switches: -avzr --delete
+          path: ./docs-html/
           remote_path: ${{ vars.DOCS_REMOTE_PATH }}
           remote_host: ${{ vars.REMOTE_HOST }}
           remote_user: ${{ vars.REMOTE_USER }}
