@@ -15,9 +15,10 @@ jobs:
         with:
           src-root: './docs'
           build-root: './docs-html'
-          command: |
-            echo 'DIRECTORY'
-            pwd
+      - name: Check contents
+        run: |
+          echo "Checking docs-html directory:"
+          ls -la ./docs-html
 
           
               
