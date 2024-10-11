@@ -15,7 +15,10 @@ jobs:
         with:
           src-root: './docs'
           build-root: './docs-html'
-          run: pwd
+      - name: test
+        run: |
+          pwd
+          ls
               
   deploy-docs:
     needs: build-docs
