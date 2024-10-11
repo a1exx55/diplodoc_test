@@ -4,21 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Build
-        uses: diplodoc-platform/docs-build-action@v3
-        with:
-          src-root: './doc'
-          build-root: './docs-html'
-      - name: Check contents
-        run: |
-          echo "Checking docs-html directory:"
-          ls -la ./docs-html
 
           
               
