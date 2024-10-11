@@ -18,7 +18,7 @@ jobs:
       - name: test
         run: |
           pwd
-          ls
+          ls /github/workspace
               
   deploy-docs:
     needs: build-docs
@@ -33,7 +33,3 @@ jobs:
           remote_host: ${{ vars.REMOTE_HOST }}
           remote_user: ${{ vars.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
-      - name: test
-        run: |
-          pwd
-          ls
