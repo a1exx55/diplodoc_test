@@ -37,7 +37,7 @@ jobs:
         with:
           switches: -avzr --delete
           path: ./docs-html/
-          remote_path: ${{ vars.DOCS_REMOTE_PATH }}
+          remote_path: ${{ vars.DOCS_REMOTE_PATH }}/${{ github.event.repository.name }}
           remote_host: ${{ vars.REMOTE_HOST }}
           remote_user: ${{ vars.REMOTE_USER }}
           remote_key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
