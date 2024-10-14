@@ -10,11 +10,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Build
-      #   uses: diplodoc-platform/docs-build-action@v3
-      #   with:
-      #     src-root: './docs'
-      #     build-root: './docs-html'
       - name: Установка пакета @diplodoc/cli
         run: npm i @diplodoc/cli -g
         shell: bash
@@ -22,15 +17,6 @@ jobs:
       - name: Сборка оглавления
         run: yfm -i ./docs -o ./docs-html
         shell: bash    
-      # - name: Deploy
-      #   uses: appleboy/scp-action@v0.1.7
-      #   with:
-      #     host: ${{ vars.REMOTE_HOST }}
-      #     username: ${{ vars.REMOTE_USER }}
-      #     key: ${{ secrets.REMOTE_HOST_SSH_KEY }}
-      #     source: "./docs-html/*"
-      #     target: ${{ vars.DOCS_REMOTE_PATH }}
-      #     debug: true
     
       - name: Deploy
         uses: burnett01/rsync-deployments@7.0.1
